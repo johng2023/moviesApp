@@ -1,0 +1,68 @@
+
+
+body, html{
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: white;
+}
+
+h1 {
+    color: black;
+    font-weight: 150;
+}
+
+form button {
+    scale: 0.8;
+}
+
+#movie-container{
+    display: flex;
+    justify-content: center;
+}
+
+input {
+    border: none;
+    border-radius: 10px;
+    background-color: #cfcfcfaa;
+}
+
+textarea{
+    height: 200px;
+    resize: none;
+}
+
+.movie-input {
+    max-width: 400px;
+}
+
+.card{
+    border: none;
+}
+
+.card-img-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-overlay-buttonX {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+.card-overlay-buttonEdit {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.eButton, .xButton{
+    color: white;
+    background-color: transparent;
+    border: none;
+    font-weight: bold;
+}
+
+.eButton:hover, .xButton:hover{
+    scale: 1.1;
+}

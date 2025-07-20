@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Movies</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"
+        defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <div class='text-center my-3 p-3' id='movie-container'>
+        <form action='/submit' method='post' class='d-flex flex-column justify-content-center align-items-center w-75'>
+
+            <img name="imageCover" class="m-3 rounded-2" src="https://image.tmdb.org/t/p/w300<%= link %>"
+                alt="<%=title %> Cover">
+
+            <div class="mb-3 w-75">
+                <label class="form-label" for="review">Review</label>
+                <input type="hidden" name='name' value='<%= title %>'>
+                <textarea type="textarea" class="form-control" id="review" name="review"
+                    placeholder="Type your review..." required><%=review%></textarea>
+            </div>
+
+            <div class="mb-3 w-25">
+                <label for="rating" class="form-label">Rating</label>
+                <input type="range" class="form-range form-control border border-0" min="0" max="10" id="rating"
+                    name='rating' value='<%=rating%>' required>
+            </div>
+
+            <button type='submit' class='btn btn-primary'>Add Movie</button>
+
+        </form>
+    </div>
+
+</body>
+
+</html>
