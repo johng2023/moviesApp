@@ -28,7 +28,7 @@ app.use(express.static('public'));
 app.get('/', async (req, res) => {
     const result = await axios.get(URL + `?api_key=${APIKey}`);
     const movies = result.data.results;
-    const data = await db.query('SELECT * FROM movies');
+    const data = await db.query('SELECT * FROM movies ORDER BY id ASC');
     const moviesAdded = data.rows;
     res.render('index.ejs', {movies : movies, data: moviesAdded});
 })
