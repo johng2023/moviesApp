@@ -66,3 +66,11 @@ textarea{
 .eButton:hover, .xButton:hover{
     scale: 1.1;
 }
+
+#register{
+    border-right: 2px solid #ccc;
+}
+
+#login{
+    border-left: 2px solid #ccc;
+}

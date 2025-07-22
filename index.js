@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import pg from 'pg';
 import axios from 'axios';
 import ejs from 'ejs';
+import bcrypt from 'bcrypt'
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -25,13 +26,27 @@ db.connect();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-app.get('/', async (req, res) => {
+app.get('/', (req,res) => {
+    res.render('home.ejs')
+})
+
+app.post('/register', (req,res) => {
+    res.redirect('/movies')
+})
+
+app.post('/login', (req,res) => {
+    res.redirect('/movies')
+})
+
+
+app.get('/movies', async (req, res) => {
     const result = await axios.get(URL + `?api_key=${APIKey}`);
     const movies = result.data.results;
     const data = await db.query('SELECT * FROM movies ORDER BY id ASC');
     const moviesAdded = data.rows;
     res.render('index.ejs', {movies : movies, data: moviesAdded});
 })
+
 
 app.post('/add', async (req, res) => {
     const movieTitle = req.body.movie;
