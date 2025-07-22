@@ -30,14 +30,6 @@ app.get('/', (req,res) => {
     res.render('home.ejs')
 })
 
-app.post('/register', (req,res) => {
-    res.redirect('/movies')
-})
-
-app.post('/login', (req,res) => {
-    res.redirect('/movies')
-})
-
 
 app.get('/movies', async (req, res) => {
     const result = await axios.get(URL + `?api_key=${APIKey}`);
@@ -47,6 +39,13 @@ app.get('/movies', async (req, res) => {
     res.render('index.ejs', {movies : movies, data: moviesAdded});
 })
 
+app.post('/register', (req,res) => {
+    res.redirect('/movies')
+})
+
+app.post('/login', (req,res) => {
+    res.redirect('/movies')
+})
 
 app.post('/add', async (req, res) => {
     const movieTitle = req.body.movie;
@@ -61,7 +60,7 @@ app.post('/submit', async (req, res) => {
     const rating = req.body.rating;
     const movieName = req.body.name;
     await db.query('UPDATE movies SET review = ($1), rating = ($2) WHERE name = ($3)', [review, rating, movieName])
-    res.redirect('/');
+    res.redirect('/movies');
 })
 
 app.post("/edit", async (req, res) => {
@@ -74,7 +73,7 @@ app.post("/edit", async (req, res) => {
 app.post("/delete", async (req, res) => {
     const itemToDelete = req.body.deleteItemId;
     await db.query('DELETE FROM movies WHERE name = $1', [itemToDelete])
-    res.redirect('/')
+    res.redirect('/movies')
   });
 
 app.listen(port, () => {
