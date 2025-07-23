@@ -11,7 +11,7 @@ dotenv.config();
 
 const app = express();
 const port = 3000;
-const URL = 'https://api.themoviedb.org/3/discover/movie';
+const URL = 'https://api.themoviedb.org/3/search/movie';
 const APIKey = process.env.TMDB_API_KEY;
 const saltRounds = 10;
 
@@ -50,13 +50,9 @@ app.get('/logout', (req, res) => {
 
 app.get('/movies', async (req, res) => {
     if(req.session.userId){
-        const result = await axios.get(URL + `?api_key=${APIKey}`);
-        const movies = result.data.results;
         const data = await db.query('SELECT * FROM movies WHERE user_id = $1', [req.session.userId]);
         const moviesAdded = data.rows;
-        res.render('index.ejs', {
-            movies : movies, 
-            data: moviesAdded});
+        res.render('index.ejs', {data: moviesAdded});
     } else {
         res.redirect('/');
     }
@@ -106,17 +102,25 @@ app.post('/login', async(req,res) => {
 })
 
 app.post('/add', async (req, res) => {
-    const movieTitle = req.body.movie;
-    const result = await axios.get(URL + `?api_key=${APIKey}`);
+    const normalTitle = req.body.movie;
+    const movieTitle = normalTitle.split(' ')
+    .map(w => w[0].toUpperCase() + w.substring(1).toLowerCase())
+    .join(' ');
+    const result = await axios.get(URL + `?api_key=${APIKey}&query=${movieTitle}`);
     const movie = result.data.results.find(movie => movie.title == movieTitle);
-    res.render('movie.ejs', {title: movie.title, link: movie.poster_path, review: '', rating: ''});
+    const selectedMovie = movie || result.data.results[0];
+    if (!selectedMovie) {
+      return res.send("Movie not found!");
+    } else {
+        res.render('movie.ejs', {title: selectedMovie.title, link: selectedMovie.poster_path, review: '', rating: ''});
+    }
 })
 
 app.post('/submit', async (req, res) => {
     const review = req.body.review;
     const rating = req.body.rating;
     const movieName = req.body.name;
-    const result = await axios.get(URL + `?api_key=${APIKey}`);
+    const result = await axios.get(URL + `?api_key=${APIKey}&query=${movieName}`);
     const movie = result.data.results.find(movie => movie.title == movieName);
     const data = await db.query('SELECT * FROM movies WHERE name = $1 AND user_id = $2', [movieName, req.session.userId])
     if(data.rows.length > 0){

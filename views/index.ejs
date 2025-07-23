@@ -30,11 +30,6 @@
                 <form action="/add" method="post" class="d-flex flex-column align-items-center">
                     <input type="text" list="movies" name="movie" class="form-control movie-input text-center mb-2"
                         placeholder="Select a movie" required />
-                    <datalist id="movies">
-                        <% movies.forEach((movie)=> { %>
-                            <option value="<%= movie.title %>">
-                                <% }) %>
-                    </datalist>
                 </form>
             </div>
         </div>
