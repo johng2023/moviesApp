@@ -15,7 +15,7 @@
 
 <body>
     <div class="logout">
-        <a href="/logout" class="btn btn-danger">Logout</a>
+        <a href="/logout" class="btn btn-danger logout">Logout</a>
     </div>
 
     <div class="container py-4">
@@ -29,7 +29,7 @@
             <div class="col-12 col-md-6">
                 <form action="/add" method="post" class="d-flex flex-column align-items-center">
                     <input type="text" list="movies" name="movie" class="form-control movie-input text-center mb-2"
-                        placeholder="Type and select a movie" required />
+                        placeholder="Select a movie" required />
                     <datalist id="movies">
                         <% movies.forEach((movie)=> { %>
                             <option value="<%= movie.title %>">

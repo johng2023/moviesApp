@@ -54,7 +54,9 @@ app.get('/movies', async (req, res) => {
         const movies = result.data.results;
         const data = await db.query('SELECT * FROM movies WHERE user_id = $1', [req.session.userId]);
         const moviesAdded = data.rows;
-        res.render('index.ejs', {movies : movies, data: moviesAdded});
+        res.render('index.ejs', {
+            movies : movies, 
+            data: moviesAdded});
     } else {
         res.redirect('/');
     }
@@ -116,11 +118,11 @@ app.post('/submit', async (req, res) => {
     const movieName = req.body.name;
     const result = await axios.get(URL + `?api_key=${APIKey}`);
     const movie = result.data.results.find(movie => movie.title == movieName);
-    const data = await db.query('SELECT * FROM movies WHERE name = $1', [movieName])
+    const data = await db.query('SELECT * FROM movies WHERE name = $1 AND user_id = $2', [movieName, req.session.userId])
     if(data.rows.length > 0){
         res.redirect('/movies');
     }else{
-        await db.query('INSERT INTO movies (name, image, user_id ) VALUES ($1, $2, $3)', [movie.title, movie.poster_path, req.session.userId]);
+    await db.query('INSERT INTO movies (name, image, user_id ) VALUES ($1, $2, $3)', [movie.title, movie.poster_path, req.session.userId]);
     await db.query('UPDATE movies SET review = ($1), rating = ($2) WHERE name = ($3)', [review, rating, movie.title]);
     res.redirect('/movies');
     }
