@@ -56,7 +56,6 @@ app.get('/movies', async (req, res) => {
     } else {
         res.redirect('/');
     }
-
 })
 
 app.post('/register', async (req,res) => {
