@@ -27,13 +27,14 @@
                     placeholder="Type your review..." required><%=review%></textarea>
             </div>
 
-            <div class="mb-3 w-25">
+            <div class="mb-3">
                 <label for="rating" class="form-label">Rating</label>
                 <input type="range" class="form-range form-control border border-0" min="0" max="10" id="rating"
                     name='rating' value='<%=rating%>' required>
             </div>
 
             <button type='submit' class='btn btn-primary'>Add Movie</button>
+            <a href="/movies" class='btn btn-danger'>Cancel</a>
 
         </form>
     </div>

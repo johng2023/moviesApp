@@ -12,7 +12,7 @@ h1 {
     font-weight: 150;
 }
 
-form button {
+form button, form a {
     scale: 0.8;
 }
 
@@ -73,4 +73,15 @@ textarea{
 
 #login{
     border-left: 2px solid #ccc;
+}
+
+.logout{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+#rating{
+    width: 30vw;
+    min-width: 200px;
 }
