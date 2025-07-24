@@ -97,7 +97,6 @@ app.post('/login', async(req,res) => {
     } catch (err) {
         console.log(err);
     }
-    
 })
 
 app.post('/add', async (req, res) => {
@@ -111,7 +110,7 @@ app.post('/add', async (req, res) => {
     if (!selectedMovie) {
       return res.send("Movie not found!");
     } else {
-        res.render('movie.ejs', {title: selectedMovie.title, link: selectedMovie.poster_path, review: '', rating: ''});
+        res.render('movie.ejs', {title: selectedMovie.title, link: selectedMovie.poster_path, review: '', rating: '', edit: "false"});
     }
 })
 
@@ -119,15 +118,22 @@ app.post('/submit', async (req, res) => {
     const review = req.body.review;
     const rating = req.body.rating;
     const movieName = req.body.name;
+    const editData = req.body.edit;
     const result = await axios.get(URL + `?api_key=${APIKey}&query=${movieName}`);
     const movie = result.data.results.find(movie => movie.title == movieName);
     const data = await db.query('SELECT * FROM movies WHERE name = $1 AND user_id = $2', [movieName, req.session.userId])
     if(data.rows.length > 0){
-        res.redirect('/movies');
-    }else{
-    await db.query('INSERT INTO movies (name, image, user_id ) VALUES ($1, $2, $3)', [movie.title, movie.poster_path, req.session.userId]);
-    await db.query('UPDATE movies SET review = ($1), rating = ($2) WHERE name = ($3)', [review, rating, movie.title]);
-    res.redirect('/movies');
+        if(editData == 'true'){
+            await db.query('UPDATE movies SET review = $1, rating = $2 WHERE user_id = $3 AND name = $4', [review, rating, req.session.userId, movieName]);
+            res.redirect('/movies');
+        } else {
+            res.send('Movie already added')
+        }
+    } else {
+        await db.query(
+        'INSERT INTO movies (name, image, user_id, review, rating) VALUES ($1, $2, $3, $4, $5)',
+        [movie.title, movie.poster_path, req.session.userId, review, rating]);
+        res.redirect('/movies')
     }
 })
 
@@ -135,7 +141,7 @@ app.post("/edit", async (req, res) => {
     const name = req.body.editItemId;
     const data = await db.query('SELECT * FROM movies WHERE name = ($1)', [name])
     const movieData = data.rows[0];
-    res.render('movie.ejs', {link:  movieData.image, review: movieData.review, rating: movieData.rating , title: name});
+    res.render('movie.ejs', {link:  movieData.image, review: movieData.review, rating: movieData.rating , title: name, edit: "true"});
   });
 
 app.post("/delete", async (req, res) => {
