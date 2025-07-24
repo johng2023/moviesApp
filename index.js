@@ -100,54 +100,74 @@ app.post('/login', async(req,res) => {
 })
 
 app.post('/add', async (req, res) => {
-    const normalTitle = req.body.movie;
-    const movieTitle = normalTitle.split(' ')
-    .map(w => w[0].toUpperCase() + w.substring(1).toLowerCase())
-    .join(' ');
-    const result = await axios.get(URL + `?api_key=${APIKey}&query=${movieTitle}`);
-    const movie = result.data.results.find(movie => movie.title == movieTitle);
-    const selectedMovie = movie || result.data.results[0];
-    if (!selectedMovie) {
-      return res.send("Movie not found!");
-    } else {
-        res.render('movie.ejs', {title: selectedMovie.title, link: selectedMovie.poster_path, review: '', rating: '', edit: "false"});
+    try {
+        const normalTitle = req.body.movie;
+        const movieTitle = normalTitle.split(' ')
+        .map(w => w[0].toUpperCase() + w.substring(1).toLowerCase())
+        .join(' ');
+        const result = await axios.get(URL + `?api_key=${APIKey}&query=${movieTitle}`);
+        const movie = result.data.results.find(movie => movie.title == movieTitle);
+        const selectedMovie = movie || result.data.results[0];
+        if (!selectedMovie) {
+            return res.send("Movie not found!");
+        } else {
+            res.render('movie.ejs', {title: selectedMovie.title, link: selectedMovie.poster_path, review: '', rating: '', edit: "false"});
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
     }
 })
 
 app.post('/submit', async (req, res) => {
-    const review = req.body.review;
-    const rating = req.body.rating;
-    const movieName = req.body.name;
-    const editData = req.body.edit;
-    const result = await axios.get(URL + `?api_key=${APIKey}&query=${movieName}`);
-    const movie = result.data.results.find(movie => movie.title == movieName);
-    const data = await db.query('SELECT * FROM movies WHERE name = $1 AND user_id = $2', [movieName, req.session.userId])
-    if(data.rows.length > 0){
-        if(editData == 'true'){
-            await db.query('UPDATE movies SET review = $1, rating = $2 WHERE user_id = $3 AND name = $4', [review, rating, req.session.userId, movieName]);
-            res.redirect('/movies');
+    try {
+        const review = req.body.review;
+        const rating = req.body.rating;
+        const movieName = req.body.name;
+        const editData = req.body.edit;
+        const result = await axios.get(URL + `?api_key=${APIKey}&query=${movieName}`);
+        const movie = result.data.results.find(movie => movie.title == movieName);
+        const data = await db.query('SELECT * FROM movies WHERE name = $1 AND user_id = $2', [movieName, req.session.userId])
+        if(data.rows.length > 0){
+            if(editData == 'true'){
+                await db.query('UPDATE movies SET review = $1, rating = $2 WHERE user_id = $3 AND name = $4', [review, rating, req.session.userId, movieName]);
+                res.redirect('/movies');
+            } else {
+                res.send('Movie already added')
+            }
         } else {
-            res.send('Movie already added')
+            await db.query(
+            'INSERT INTO movies (name, image, user_id, review, rating) VALUES ($1, $2, $3, $4, $5)',
+            [movie.title, movie.poster_path, req.session.userId, review, rating]);
+            res.redirect('/movies')
         }
-    } else {
-        await db.query(
-        'INSERT INTO movies (name, image, user_id, review, rating) VALUES ($1, $2, $3, $4, $5)',
-        [movie.title, movie.poster_path, req.session.userId, review, rating]);
-        res.redirect('/movies')
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
     }
 })
 
 app.post("/edit", async (req, res) => {
-    const name = req.body.editItemId;
-    const data = await db.query('SELECT * FROM movies WHERE name = ($1)', [name])
-    const movieData = data.rows[0];
-    res.render('movie.ejs', {link:  movieData.image, review: movieData.review, rating: movieData.rating , title: name, edit: "true"});
+    try {
+        const name = req.body.editItemId;
+        const data = await db.query('SELECT * FROM movies WHERE name = ($1)', [name])
+        const movieData = data.rows[0];
+        res.render('movie.ejs', {link:  movieData.image, review: movieData.review, rating: movieData.rating , title: name, edit: "true"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
   });
 
 app.post("/delete", async (req, res) => {
-    const itemToDelete = req.body.deleteItemId;
-    await db.query('DELETE FROM movies WHERE name = $1', [itemToDelete])
-    res.redirect('/movies')
+    try {
+        const itemToDelete = req.body.deleteItemId;
+        await db.query('DELETE FROM movies WHERE name = $1', [itemToDelete])
+        res.redirect('/movies')
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
   });
 
 app.listen(port, () => {
